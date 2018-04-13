@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+*.swp
+.pytest_cache/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -99,3 +101,5 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+tmp/
