@@ -1,6 +1,9 @@
 # csirtg-ipssml
 simple library for detecting suspicious connections
 
+https://csirtgadgets.com/commits/2018/3/8/hunting-for-suspicious-domains-using-python-and-sklearn
+https://csirtgadgets.com/commits/2018/3/30/hunting-for-threats-like-a-quant
+
 ```bash
 $ pip install -r dev_requirements.txt
 $ python setup.py develop
