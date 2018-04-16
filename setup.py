@@ -15,9 +15,9 @@ if sys.argv[-1] == 'test':
         modules = map(__import__, test_requirements)
     except ImportError as e:
         err_msg = e.message.replace("No module named ", "")
-        msg = "%s is not installed. Install your test requirments." % err_msg
+        msg = "%s is not installed. Install your test requirements." % err_msg
         raise ImportError(msg)
-    r = os.system('py.test test -v --cov=csirtg_domainsml --cov-fail-under=75')
+    r = os.system('py.test test -v --cov=csirtg_ipsml --cov-fail-under=75')
     if r == 0:
         sys.exit()
     else:
@@ -32,13 +32,13 @@ data_files = [
 ]
 
 setup(
-    name="csirtg_domainsml",
+    name="csirtg_ipsml",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    description="CSIRTG Domains ML Framework",
+    description="CSIRTG IP ML Framework",
     long_description="",
-    url="https://github.com/csirtgadgets/csirtg-domainsml",
-    license='MPLv2',
+    url="https://github.com/csirtgadgets/csirtg-ipsml",
+    license='MPL2',
     data_files=[('data', data_files)],
     keywords=['network', 'security'],
     author="Wes Young",
@@ -52,8 +52,8 @@ setup(
     ],
     entry_points={
        'console_scripts': [
-           'csirtg-domainsml-train=csirtg_domainsml.train:main',
-           'csirtg-domainsml=csirtg_domainsml:main'
+           'csirtg-ipsml-train=csirtg_ipsml.train:main',
+           'csirtg-ipsml=csirtg_ipsml:main'
        ]
     },
 )

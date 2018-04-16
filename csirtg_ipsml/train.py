@@ -12,36 +12,8 @@ import os
 # http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html
 from sklearn import preprocessing
 import ipaddress
-
-# from .constants import PYVERSION
-
-
-# https://timezonedb.com/download
-me = os.path.dirname(__file__)
-
-MODEL = '%s/../data/model.pickle' % me
-# if PYVERSION == 2:
-#     MODEL = '%s/../data/model_py2.pickle' % me
-
-DATA_PATH = '%s/../data/feed2.txt' % me
-
-
-CC_FILE = "%s/../data/cc.txt" % me
-CC = []
-
-
-TZ_FILE = "%s/../data/timezones.txt" % me
-TZ = []
-
-with open(CC_FILE) as F:
-    for l in F.readlines():
-        l = l.strip("\n")
-        l = l.split(";")
-        CC.append(l[1])
-
-with open(TZ_FILE) as F:
-    for l in F.readlines():
-        TZ.append(l.rstrip("\n"))
+from .ip import TZ, CC
+from .ip import extract_features, fit_features
 
 
 def accuracy(classifier, test_inputs, test_outputs):
@@ -56,30 +28,21 @@ def accuracy(classifier, test_inputs, test_outputs):
     print("The accuracy of your decision tree on testing data is: " + str(accuracy))
 
 
-def load_data(handle):
-    cc_data = preprocessing.LabelEncoder()
-    cc_data.fit(CC)
-
-    tz_data = preprocessing.LabelEncoder()
-    tz_data.fit(TZ)
-
+def load_data(data):
     lines = []
-    for l in handle:
-        # hour, ip, lat, long, tz, cc, asn
+    for l in data:
+        # hour, ip, lat, long, tz, cc, asn, bad
         l = l.rstrip("\n").split(',')
-        pprint(l)
 
-        l[1] = int(ipaddress.ip_address(l[1]))
+        res = l[7]
 
-        t = tz_data.transform([l[4]])[0]
-        y = cc_data.transform([l[5]])[0]
+        l = list(extract_features(','.join([l[1], l[0]])))
+        l[0].append(res)
+        lines.append(l[0])
 
-        l[4] = y
-        l[5] = t
-
-        lines.append(l)
-
+    lines = list(fit_features(lines))
     training_data = np.array(lines, dtype=int)
+    print(training_data[1])
     print("Training data loaded.")
 
     return training_data
@@ -122,13 +85,14 @@ def main():
                         $
                     '''),
         formatter_class=RawDescriptionHelpFormatter,
-        prog='csirtg-ipsml'
+        prog='csirtg-ipsml-train'
     )
 
     p.add_argument('-d', '--debug', dest='debug', action="store_true")
     p.add_argument('--save')
     p.add_argument('--load')
     p.add_argument('--training')
+    p.add_argument('-i', '--indicator')
 
     args = p.parse_args()
 
@@ -146,8 +110,8 @@ def main():
         accuracy(classifier, test_inputs, test_outputs)
 
     if args.save:
-        with open(args.save, 'w') as OUTFILE:
-            print(pickle.dumps(classifier), file=OUTFILE)
+        with open(args.save, 'wb') as OUTFILE:
+            pickle.dump(classifier, OUTFILE)
 
 
 if __name__ == '__main__':

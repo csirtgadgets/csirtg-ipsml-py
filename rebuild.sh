@@ -12,7 +12,7 @@ cat data/blacklist.txt | python csirtg_ipsml/ip.py > tmp/bad.csv
 echo "merging lists"
 cat tmp/good.csv tmp/bad.csv | gshuf > tmp/training.csv
 
-TESTS=""
+TESTS="128.205.1.1"
 
 for T in $TESTS; do
   echo "Testing $T"

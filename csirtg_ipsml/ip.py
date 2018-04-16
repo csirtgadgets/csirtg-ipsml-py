@@ -1,192 +1,97 @@
 
-from csirtg_domainsml.utils import entropy
 import os
-import re
-import editdistance
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import textwrap
-import socket
-import sys
 import numpy as np
 from pprint import pprint
-import re
 import sys
+from .geo import asndb, citydb
+import ipaddress
+from sklearn import preprocessing
 
 me = os.path.dirname(__file__)
-
-WHITELIST_PATH = '%s/../data/whitelist.txt' % me
-if os.path.exists(os.path.join(sys.prefix, 'csirtg_domainsml', 'data', 'whitelist.txt')):
-    WHITELIST_PATH = os.path.join(sys.prefix, 'csirtg_domainsml', 'data', 'whitelist.txt')
-
-with open(WHITELIST_PATH) as F:
-    GOOD = set(l.strip('\n') for l in F.readlines())
+CC_FILE = "%s/../data/cc.txt" % me
+CC = []
 
 
-# see notes.txt
-def _is_non_std(u):
-    if u.count('.') < 12:
-        return -1
+TZ_FILE = "%s/../data/timezones.txt" % me
+TZ = []
 
-    if u.count('.') < 19:
-        return 0
+with open(CC_FILE) as F:
+    for l in F.readlines():
+        l = l.strip("\n")
+        l = l.split(";")
+        CC.append(l[1])
 
-    return 1
+with open(TZ_FILE) as F:
+    for l in F.readlines():
+        TZ.append(l.rstrip("\n"))
 
+cc_data = preprocessing.LabelEncoder()
+cc_data.fit(CC)
 
-def _has_subdomains(u):
-    uu = re.sub(r'\.[a-zA-Z]{2}$', '', u)
-    uu = re.sub(r'^www\.', '', uu)
-
-    if uu.count('.') < 3:
-        return -1
-
-    if uu.count('.') < 4:
-        return 0
-
-    return 1
+tz_data = preprocessing.LabelEncoder()
+tz_data.fit(TZ)
 
 
-def _has_high_entropy(u):
-    e = entropy(u)
+def extract_features(indicator):
+    import arrow
+    ts = arrow.utcnow()
+    ts = arrow.get(ts).hour
 
-    if e < 3.1:
-        return -1
+    if ',' in indicator:
+        indicator, ts = indicator.split(',')
+        ts = int(ts)
+        # ts = arrow.get(ts).hour
 
-    if e < 3.5:
-        return 0
+    # week?
+    asn = asndb.asn_by_addr(indicator)
+    # pprint(asn)
+    if asn:
+        asn = asn.split()[0]
+        _, asn = asn.split('AS')
 
-    return 1
+    if asn is None:
+        asn = 0
 
+    city = citydb.record_by_addr(indicator)
+    # pprint(indicator)
+    # pprint(city)
 
-def _has_close_distance(u):
-    l = []
-    if u in GOOD:
-        return -1
+    if city is None:
+        yield [ts, indicator, 0, 0, 'NA', 'NA', 0]
 
-    bits = False
-    if u.count('.') == 2:
-        bits = u.split('.')
-        bits.pop(0)
-        bits = '.'.join(bits)
+    else:
+        if not asn:
+            asn = 0
 
-    for g in GOOD:
-        if u.endswith('.%s' % g):
-            return -1
+        tz = city['time_zone']
+        if tz is None:
+            tz = 'NA'
 
-        if bits and bits in g:
-            return -1
+        cc = city['country_code']
+        if cc is None:
+            cc= 'NA'
 
-        d = editdistance.eval(u, g)
-
-        l.append(int(d))
-
-    l.sort()
-
-    if l[0] < 10:
-        return 1
-
-    if l[0] < 20:
-        return 0
-
-    return -1
+        # hour, src, dest, client, tz, cc, success
+        yield [ts, indicator, int(city['latitude']), int(city['longitude']), tz, cc, int(asn)]
 
 
-def _has_hyphens(u):
-    if '-' not in u:
-        return -1
+def fit_features(i):
+    for l in i:
+        l[1] = int(ipaddress.ip_address(l[1]))
 
-    if u.count('-') < 3:
-        return 0
+        l[4] = tz_data.transform([l[4]])[0]
+        l[5] = cc_data.transform([l[5]])[0]
 
-    return 1
-
-
-def _is_secure(u):
-    for e in ['confirm', 'account', 'banking', 'secure', 'ebayisapi', 'webscr', 'login', 'signin', 'bank']:
-        if re.search(e, u):
-            return 1
-    return -1
+        yield l
 
 
-def _is_ip(u):
-    try:
-        socket.inet_aton(u)
-    except Exception:
-        return -1
-
-    return 1
-
-
-def _is_edu(u):
-    if re.match(r'.edu$', u):
-        return 1
-
-    return -1
-
-
-def _is_common_tld(u):
-    if re.match(r'.[com|net|org|edu]$', u):
-        return 1
-
-    return -1
-
-
-def _has_low_length(u):
-    uu = re.sub(r'\.[a-zA-Z]{2}$', '', u)
-    uu = re.sub(r'^www\.', '', uu)
-
-    l = len(uu)
-    if l < 6:
-        return -1
-
-    if l < 12:
-        return 0
-
-    return 1
-
-
-def _has_high_length(u):
-    uu = re.sub(r'\.[a-zA-Z]{2}$', '', u)
-    uu = re.sub(r'^www\.', '', uu)
-
-    l = len(uu)
-    if l < 15:
-        return -1
-
-    if l < 17:
-        return 0
-
-    return 1
-
-
-FEATURES = [
-    _is_non_std,
-    _has_high_length,
-    _has_low_length,
-    _has_close_distance,
-    _has_high_entropy,
-    _has_hyphens,
-    _has_subdomains,
-    _is_secure,
-    _is_ip,
-    _is_edu,
-    _is_common_tld,
-]
-
-
-def _extract_features(u):
-    feats = []
-
-    for f in FEATURES:
-        r = f(u)
-        feats.append(r)
-
-    return feats
-
-
-def predict(d, classifier):
-    feats = _extract_features(d)
-    feats = np.array([feats], dtype=int)
+def predict(i, classifier):
+    feats = extract_features(i)
+    feats = list(fit_features(f for f in feats))
+    pprint(feats)
+    feats = np.array(feats, dtype=int)
     return classifier.predict(feats)
 
 
@@ -194,10 +99,10 @@ def main():
     p = ArgumentParser(
         description=textwrap.dedent('''\
                 example usage:
-                    $ csirtg-domainsml --training data/training.csv -i paypal-badsite.com
+                    $ cat data/training.csv | csirtg-ipsml -i 128.205.1.1
                 '''),
         formatter_class=RawDescriptionHelpFormatter,
-        prog='csirtg-domainsml'
+        prog='csirtg-ipsml'
     )
 
     p.add_argument('-d', '--debug', dest='debug', action="store_true")
@@ -206,8 +111,10 @@ def main():
     args = p.parse_args()
 
     for l in sys.stdin:
-        l = l.rstrip()
-        ff = _extract_features(l)
+        l = l.strip('"')
+        l = l.split(',')
+
+        ff = extract_features(l)
 
         if args.good:
             ff.append(0)
