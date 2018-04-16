@@ -26,12 +26,12 @@ if os.path.exists(MODEL):
         CLS = pickle.load(F)
 
 
-def predict(i, classifier=CLS):
+def predict(i, ts, classifier=CLS):
     if not classifier:
         with open(MODEL) as FILE:
             classifier = pickle.load(FILE)
 
-    return predict_ip(i, classifier)[0]
+    return predict_ip(i, ts, classifier)[0]
 
 
 def main():
@@ -48,7 +48,13 @@ def main():
 
     args = p.parse_args()
 
-    p = predict(args.indicator)
+    if ',' in args.indicator:
+        i, hour = args.indicator.split(',')
+    else:
+        hour = arrow.utcnow().hour
+        i = args.indicator
+
+    p = predict(i, hour)
     if p:
         print("Yes")
     else:

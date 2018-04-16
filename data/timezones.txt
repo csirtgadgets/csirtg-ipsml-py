@@ -1,5 +1,16 @@
 None
 NA
+Asia/Istanbul
+Australia/NSW
+Australia/West
+Australia/Victoria
+America/Indianapolis
+Australia/Canberra
+Australia/Queensland
+Australia/Tasmania
+Australia/South
+Chile/Continental
+Asia/Macao
 Asia/Harbin
 Asia/Chongqing
 America/Montreal

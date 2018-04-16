@@ -48,7 +48,10 @@ setup(
         'scikit-learn>=0.19,<0.20',
         'numpy',
         'scipy',
-        'editdistance'
+        'pygeoip',
+        'arrow',
+        'maxminddb',
+        'geoip2',
     ],
     entry_points={
        'console_scripts': [

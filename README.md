@@ -1,5 +1,17 @@
 # csirtg-ipssml
-simple library for detecting suspicious connections
+simple library for detecting suspicious connections.
+
+This model is very simple and looks at features such as:
+
+* Time of day (hour)
+* General Long / Lat
+* TimeZone
+* Country Code
+* ASN
+
+NOTE: THE DEFAULT DATA-SETS ARE NOT STATISTICALLY SOUND
+
+While not meant to be perfect, meant to demonstrate how you might look at suspicious connections and build a VERY SIMPLE machine learning model around those features.
 
 https://csirtgadgets.com/commits/2018/3/8/hunting-for-suspicious-domains-using-python-and-sklearn
 https://csirtgadgets.com/commits/2018/3/30/hunting-for-threats-like-a-quant

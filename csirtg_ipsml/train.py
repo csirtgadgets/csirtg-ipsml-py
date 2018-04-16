@@ -12,8 +12,8 @@ import os
 # http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html
 from sklearn import preprocessing
 import ipaddress
-from .ip import TZ, CC
-from .ip import extract_features, fit_features
+from csirtg_ipsml.ip import TZ, CC
+from csirtg_ipsml.ip import extract_features, fit_features
 
 
 def accuracy(classifier, test_inputs, test_outputs):
@@ -31,12 +31,12 @@ def accuracy(classifier, test_inputs, test_outputs):
 def load_data(data):
     lines = []
     for l in data:
-        # hour, ip, lat, long, tz, cc, asn, bad
+        # hour, ip, suspicious
         l = l.rstrip("\n").split(',')
 
-        res = l[7]
+        res = l[2]
 
-        l = list(extract_features(','.join([l[1], l[0]])))
+        l = list(extract_features(l[1], l[0]))
         l[0].append(res)
         lines.append(l[0])
 

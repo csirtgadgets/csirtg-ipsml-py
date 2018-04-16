@@ -3,16 +3,18 @@ import os
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import textwrap
 import numpy as np
-from pprint import pprint
 import sys
-from .geo import asndb, citydb
 import ipaddress
+import arrow
+from pprint import pprint
+import re
+
 from sklearn import preprocessing
+from csirtg_ipsml.geo import asndb, citydb
 
 me = os.path.dirname(__file__)
 CC_FILE = "%s/../data/cc.txt" % me
 CC = []
-
 
 TZ_FILE = "%s/../data/timezones.txt" % me
 TZ = []
@@ -34,16 +36,7 @@ tz_data = preprocessing.LabelEncoder()
 tz_data.fit(TZ)
 
 
-def extract_features(indicator):
-    import arrow
-    ts = arrow.utcnow()
-    ts = arrow.get(ts).hour
-
-    if ',' in indicator:
-        indicator, ts = indicator.split(',')
-        ts = int(ts)
-        # ts = arrow.get(ts).hour
-
+def extract_features(indicator, ts):
     # week?
     asn = asndb.asn_by_addr(indicator)
     # pprint(asn)
@@ -79,7 +72,10 @@ def extract_features(indicator):
 
 def fit_features(i):
     for l in i:
-        l[1] = int(ipaddress.ip_address(l[1]))
+        try:
+            l[1] = int(ipaddress.ip_address(l[1]))
+        except:
+            l[1] = int(ipaddress.ip_address(l[1].decode('utf-8')))
 
         l[4] = tz_data.transform([l[4]])[0]
         l[5] = cc_data.transform([l[5]])[0]
@@ -87,10 +83,9 @@ def fit_features(i):
         yield l
 
 
-def predict(i, classifier):
-    feats = extract_features(i)
+def predict(i, ts, classifier):
+    feats = extract_features(i, ts)
     feats = list(fit_features(f for f in feats))
-    pprint(feats)
     feats = np.array(feats, dtype=int)
     return classifier.predict(feats)
 
@@ -99,10 +94,13 @@ def main():
     p = ArgumentParser(
         description=textwrap.dedent('''\
                 example usage:
-                    $ cat data/training.csv | csirtg-ipsml -i 128.205.1.1
+                  $ cat data/blacklist.csv | python csirtg_ipsml/ip.py > tmp/blacklist.csv
+                  $ cat data/whitelist.csv | python csirtg_ipsml/ip.py --good > tmp/whitelist.csv
+                  $ cat tmp/blacklist.csv tmp/whitelist.csv | gshuf > tmp/training.csv
+                  $ cat data/training.csv | csirtg-ipsml -i 128.205.1.1
                 '''),
         formatter_class=RawDescriptionHelpFormatter,
-        prog='csirtg-ipsml'
+        prog='csirtg-ipsml/ip.py'
     )
 
     p.add_argument('-d', '--debug', dest='debug', action="store_true")
@@ -111,18 +109,23 @@ def main():
     args = p.parse_args()
 
     for l in sys.stdin:
-        l = l.strip('"')
+        l = l.rstrip("\n")
+        l = l.rstrip("\r")
+        l = re.sub('"', '', l)
         l = l.split(',')
 
-        ff = extract_features(l)
+        # ff = [f for f in extract_features(l[1], ts=l[0])]
+        # ff = ff[0]
+        ts = arrow.get(l[0])
+        l[0] = ts.strftime('%H')
 
         if args.good:
-            ff.append(0)
+            l.append(0)
         else:
-            ff.append(1)
+            l.append(1)
 
-        ff = [str(f) for f in ff]
-        out = ','.join(ff)
+        l = [str(f) for f in l]
+        out = ','.join(l)
         print(out)
 
 
