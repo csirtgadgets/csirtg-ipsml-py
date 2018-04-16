@@ -1,4 +1,4 @@
-# csirtg-ipssml
+# csirtg-ipsml
 simple library for detecting suspicious connections.
 
 This model is very simple and looks at features such as:
