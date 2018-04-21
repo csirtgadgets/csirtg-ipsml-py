@@ -13,6 +13,7 @@ NOTE: THE DEFAULT DATA-SETS ARE NOT STATISTICALLY SOUND
 
 While not meant to be perfect, meant to demonstrate how you might look at suspicious connections and build a VERY SIMPLE machine learning model around those features.
 
+https://csirtgadgets.com/commits/2018/4/20/predicting-attacks-with-python-and-sklearn
 https://csirtgadgets.com/commits/2018/3/8/hunting-for-suspicious-domains-using-python-and-sklearn
 https://csirtgadgets.com/commits/2018/3/30/hunting-for-threats-like-a-quant
 
