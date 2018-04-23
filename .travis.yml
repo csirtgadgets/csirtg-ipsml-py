@@ -11,9 +11,9 @@ python:
 
 before_install:
   - sudo apt-get update
-  - sudo echo 'UserId 999999' >> /etc/GeoIP.conf
-  - sudo echo 'LicenseKey 000000000000' >> /etc/GeoIP.conf
-  - sudo echo 'ProductIds GeoLite2-City GeoLite2-Country GeoLite2-ASN' >> /etc/GeoIP.conf
+  - echo 'UserId 999999' | sudo tee -a /etc/GeoIP.conf
+  - echo 'LicenseKey 000000000000' | sudo tee -a /etc/GeoIP.conf
+  - echo 'ProductIds GeoLite2-City GeoLite2-Country GeoLite2-ASN' | sudo tee -a /etc/GeoIP.conf
   - sudo apt-get install -y geoipupdate
   - sudo geoipupdate -v
 
