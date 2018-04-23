@@ -30,3 +30,13 @@ notifications:
   email:
     on_success: never
     on_failure: never
+
+deploy:
+  provider: pypi
+  user: wesyoung
+  on:
+    branch: master
+    tags: true
+    condition: $TRAVIS_PYTHON_VERSION = "3.6"
+  password:
+    secure: jkQxaBIqxnbqSvgzBluPG8s6MM1ySFgekajI1ULcEL2FQnU4WbuI3M+dHj2+Rt2mnN98linNnZqEyxikJ4uUd0uUMciMnRt3Wax0iRta/fA2tuwxHzuKY14TRmO0GCED5eB88rznS8hoLTBDurNUPIiZ2R5PCAwRQRYGyWip8JUOeFS4rnrt9LUHSeQ72MVdYwfYkLNZWHcvG4bDzxpaKSRwvHul/9hFRGEIWSBSHSdQOithtXt8SJ5XErA/XZURoFzmQ0BIdQm9IpSIC1xAZg3zhB5vHSeS9TtYcBh+k0a6KcUKoJrTN5Gpnz3j2beQ5/HUVq8ZKRxnBKYJent37n8JUvWiTMyoMHRJwCiydBXr2Dto7uyy0u1krMRto6wbDnebhXEZiZdUeiO6WeZJKeZMTjQ0gDUi9wYLv31LxPS/Ad86ZutNoJc8CyRkIU3KLGLkQsiQxR511wrSoRAK1SebbeL96RWhCflVzJydO9pVppuQo0dVDR3DnXSEsB1MIBaVCALwV7tYr9vRLGQLrj/E0PbzVvRu4kzO2wvh/WaX4eBeKawt5PLOQAPN7/Nz3/uy4qHNLWX8AKKntJgi3+OOu98pawr4SPfwxp0NTp4myWW80kiqKBqZ5FU3SA0E/tS8RIB6OuScEY5dXlCOEbFHjIMkzVd7T8OVQV7DBE8=
