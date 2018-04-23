@@ -10,6 +10,7 @@ python:
   - 3.6
 
 before_install:
+  - sudo apt-get update
   - sudo add-apt-repository ppa:maxmind/ppa
   - sudo apt-get update
   - echo 'UserId 999999' | sudo tee -a /etc/GeoIP.conf
