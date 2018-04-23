@@ -12,13 +12,14 @@ MODEL = 'model.pickle'
 if PYVERSION == 2:
     MODEL = 'model_py2.pickle'
 
-MODEL = os.path.join('%s/../data/%s' % (os.path.dirname(__file__), MODEL))
-
 if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', MODEL)):
     MODEL = os.path.join(sys.prefix, 'csirtg_ipsml', 'data', MODEL)
 
 elif os.path.exists(os.path.join('usr', 'local',  'csirtg_ipsml', 'data', MODEL)):
     MODEL = os.path.join('usr', 'local',  'csirtg_ipsml', 'data', MODEL)
+
+else:
+    MODEL = os.path.join('%s/../data/%s' % (os.path.dirname(__file__), MODEL))
 
 CLS = None
 if os.path.exists(MODEL):

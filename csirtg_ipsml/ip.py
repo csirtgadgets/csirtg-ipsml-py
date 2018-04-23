@@ -14,9 +14,23 @@ from csirtg_ipsml.geo import asndb, citydb
 
 me = os.path.dirname(__file__)
 CC_FILE = "%s/../data/cc.txt" % me
+
+if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'cc.txt')):
+    CC_FILE = os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'cc.txt')
+
+elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')):
+    CC_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')
+
 CC = []
 
 TZ_FILE = "%s/../data/timezones.txt" % me
+
+if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'timezones.txt')):
+    TZ_FILE = os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'timezones.txt')
+
+elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')):
+    TZ_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')
+
 TZ = []
 
 with open(CC_FILE) as F:
