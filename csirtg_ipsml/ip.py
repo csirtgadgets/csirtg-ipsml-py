@@ -38,18 +38,21 @@ tz_data.fit(TZ)
 
 def extract_features(indicator, ts):
     # week?
-    asn = asndb.asn_by_addr(indicator)
-    # pprint(asn)
+    try:
+        asn = asndb.asn(indicator)
+    except:
+        asn = None
+
     if asn:
-        asn = asn.split()[0]
-        _, asn = asn.split('AS')
+        asn = asn.autonomous_system_number
 
     if asn is None:
         asn = 0
 
-    city = citydb.record_by_addr(indicator)
-    # pprint(indicator)
-    # pprint(city)
+    try:
+        city = citydb.city(indicator)
+    except:
+        city = None
 
     if city is None:
         yield [ts, indicator, 0, 0, 'NA', 'NA', 0]
@@ -58,16 +61,16 @@ def extract_features(indicator, ts):
         if not asn:
             asn = 0
 
-        tz = city['time_zone']
+        tz = city.location.time_zone
         if tz is None:
             tz = 'NA'
 
-        cc = city['country_code']
+        cc = city.country.iso_code
         if cc is None:
-            cc= 'NA'
+            cc = 'NA'
 
         # hour, src, dest, client, tz, cc, success
-        yield [ts, indicator, int(city['latitude']), int(city['longitude']), tz, cc, int(asn)]
+        yield [ts, indicator, int(city.location.latitude), int(city.location.longitude), tz, cc, int(asn)]
 
 
 def fit_features(i):

@@ -24,9 +24,9 @@ exclude_lines =
 ignore_errors = True
 
 omit =
-    csirtg_domainsml/train.py
-    csirtg_domainsml/_version.py
-    csirtg_domainsml/constants.py
+    csirtg_ipsml/train.py
+    csirtg_ipsml/_version.py
+    csirtg_ipsml/constants.py
 
 [html]
 directory = coverage_html_report
