@@ -14,9 +14,29 @@ from csirtg_ipsml.geo import asndb, citydb
 
 me = os.path.dirname(__file__)
 CC_FILE = "%s/../data/cc.txt" % me
+
+if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'cc.txt')):
+    CC_FILE = os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'cc.txt')
+
+elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')):
+    CC_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')
+
+elif os.path.exists(("%s/data/cc.txt" % me)):
+    CC_FILE = "%s/data/cc.txt" % me
+
 CC = []
 
 TZ_FILE = "%s/../data/timezones.txt" % me
+
+if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'timezones.txt')):
+    TZ_FILE = os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'timezones.txt')
+
+elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')):
+    TZ_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')
+
+elif os.path.exists(("%s/data/timezones.txt" % me)):
+    TZ_FILE = "%s/data/timezones.txt" % me
+
 TZ = []
 
 with open(CC_FILE) as F:
@@ -38,18 +58,21 @@ tz_data.fit(TZ)
 
 def extract_features(indicator, ts):
     # week?
-    asn = asndb.asn_by_addr(indicator)
-    # pprint(asn)
+    try:
+        asn = asndb.asn(indicator)
+    except:
+        asn = None
+
     if asn:
-        asn = asn.split()[0]
-        _, asn = asn.split('AS')
+        asn = asn.autonomous_system_number
 
     if asn is None:
         asn = 0
 
-    city = citydb.record_by_addr(indicator)
-    # pprint(indicator)
-    # pprint(city)
+    try:
+        city = citydb.city(indicator)
+    except:
+        city = None
 
     if city is None:
         yield [ts, indicator, 0, 0, 'NA', 'NA', 0]
@@ -58,16 +81,28 @@ def extract_features(indicator, ts):
         if not asn:
             asn = 0
 
-        tz = city['time_zone']
+        tz = city.location.time_zone
         if tz is None:
             tz = 'NA'
 
-        cc = city['country_code']
+        cc = city.country.iso_code
         if cc is None:
-            cc= 'NA'
+            cc = 'NA'
+
+        lat = city.location.latitude
+        if lat:
+            lat = int(lat)
+        else:
+            lat = 0
+
+        long = city.location.longitude
+        if long:
+            long = int(long)
+        else:
+            long = 0
 
         # hour, src, dest, client, tz, cc, success
-        yield [ts, indicator, int(city['latitude']), int(city['longitude']), tz, cc, int(asn)]
+        yield [ts, indicator, lat, long, tz, cc, int(asn)]
 
 
 def fit_features(i):

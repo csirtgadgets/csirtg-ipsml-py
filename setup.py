@@ -17,7 +17,7 @@ if sys.argv[-1] == 'test':
         err_msg = e.message.replace("No module named ", "")
         msg = "%s is not installed. Install your test requirements." % err_msg
         raise ImportError(msg)
-    r = os.system('py.test test -v --cov=csirtg_ipsml --cov-fail-under=75')
+    r = os.system('py.test test -v --cov=csirtg_ipsml --cov-fail-under=50')
     if r == 0:
         sys.exit()
     else:
@@ -28,7 +28,9 @@ data_files = [
     'data/whitelist.txt',
     'data/blacklist.txt',
     'data/model.pickle',
-    'data/py2model.pickle'
+    'data/model_py2.pickle',
+    'data/cc.txt',
+    'data/timezones.txt'
 ]
 
 setup(
@@ -39,7 +41,7 @@ setup(
     long_description="",
     url="https://github.com/csirtgadgets/csirtg-ipsml",
     license='MPL2',
-    data_files=[('data', data_files)],
+    data_files=[('csirtg_ipsml/data', data_files)],
     keywords=['network', 'security'],
     author="Wes Young",
     author_email="wes@barely3am.com",

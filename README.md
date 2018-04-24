@@ -18,6 +18,8 @@ https://csirtgadgets.com/commits/2018/3/8/hunting-for-suspicious-domains-using-p
 https://csirtgadgets.com/commits/2018/3/30/hunting-for-threats-like-a-quant
 
 ```bash
+$ sudo [apt-get|brew|yum] install geoipupdate  # ubuntu16 or later, should use if you can python3
+$ sudo geoipupdate -v
 $ pip install -r dev_requirements.txt
 $ python setup.py develop
 $ bash rebuild.sh
