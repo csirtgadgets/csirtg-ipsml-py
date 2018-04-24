@@ -89,8 +89,20 @@ def extract_features(indicator, ts):
         if cc is None:
             cc = 'NA'
 
+        lat = city.location.latitude
+        if lat:
+            lat = int(lat)
+        else:
+            lat = 0
+
+        long = city.location.longitude
+        if long:
+            long = int(long)
+        else:
+            long = 0
+
         # hour, src, dest, client, tz, cc, success
-        yield [ts, indicator, int(city.location.latitude), int(city.location.longitude), tz, cc, int(asn)]
+        yield [ts, indicator, lat, long, tz, cc, int(asn)]
 
 
 def fit_features(i):

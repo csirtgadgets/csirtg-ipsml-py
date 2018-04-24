@@ -27,6 +27,7 @@ omit =
     csirtg_ipsml/train.py
     csirtg_ipsml/_version.py
     csirtg_ipsml/constants.py
+    csirtg_ipsml/geo.py
 
 [html]
 directory = coverage_html_report
