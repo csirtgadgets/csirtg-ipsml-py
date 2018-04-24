@@ -25,6 +25,8 @@ install:
 script:
   - python setup.py test
   - python setup.py sdist bdist
+  - python setup.py install
+  - csirtg-ipsml 128.205.1.1,2
 
 notifications:
   email:
