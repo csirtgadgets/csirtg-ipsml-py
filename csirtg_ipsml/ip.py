@@ -21,6 +21,9 @@ if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'cc.txt')):
 elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')):
     CC_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')
 
+elif os.path.exists(("%s/data/cc.txt" % me)):
+    CC_FILE = "%s/data/cc.txt" % me
+
 CC = []
 
 TZ_FILE = "%s/../data/timezones.txt" % me
@@ -30,6 +33,9 @@ if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'timezones.tx
 
 elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')):
     TZ_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')
+
+elif os.path.exists(("%s/data/timezones.txt" % me)):
+    TZ_FILE = "%s/data/timezones.txt" % me
 
 TZ = []
 
