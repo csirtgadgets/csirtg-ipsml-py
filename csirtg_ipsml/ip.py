@@ -18,8 +18,8 @@ CC_FILE = "%s/../data/cc.txt" % me
 if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'cc.txt')):
     CC_FILE = os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'cc.txt')
 
-elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')):
-    CC_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')
+elif os.path.exists(os.path.join('/usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')):
+    CC_FILE = os.path.join('/usr', 'local', 'csirtg_ipsml', 'data', 'cc.txt')
 
 elif os.path.exists(("%s/data/cc.txt" % me)):
     CC_FILE = "%s/data/cc.txt" % me
@@ -31,15 +31,15 @@ TZ_FILE = "%s/../data/timezones.txt" % me
 if os.path.exists(os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'timezones.txt')):
     TZ_FILE = os.path.join(sys.prefix, 'csirtg_ipsml', 'data', 'timezones.txt')
 
-elif os.path.exists(os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')):
-    TZ_FILE = os.path.join('usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')
+elif os.path.exists(os.path.join('/usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')):
+    TZ_FILE = os.path.join('/usr', 'local', 'csirtg_ipsml', 'data', 'timezones.txt')
 
 elif os.path.exists(("%s/data/timezones.txt" % me)):
     TZ_FILE = "%s/data/timezones.txt" % me
 
 TZ = []
 
-with open(CC_FILE) as F:
+with open(CC_FILE, encoding='utf-8', errors='ignore') as F:
     for l in F.readlines():
         l = l.strip("\n")
         l = l.split(";")
