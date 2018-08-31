@@ -3,9 +3,10 @@ import geoip2.database
 
 DB_SEARCH_PATHS = [
     './',
-    '/usr/share/GeoIP',
+    '/var/lib/GeoIP',
     '/usr/local/share/GeoIP',
-    '/usr/local/var/GeoIP'
+    '/usr/local/var/GeoIP',
+    '/usr/share/GeoIP',
 ]
 
 DB_PATH = 'GeoLite2-City.mmdb'
